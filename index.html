@@ -7,15 +7,15 @@
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: system-ui, -apple-system, sans-serif;
-    background: radial-gradient(circle at 30% 20%, #1a2438 0%, #0a0d14 60%, #05070b 100%);
-    color: #e8e8e8; min-height: 100vh; display: flex; justify-content: center; align-items: flex-start; padding: 16px; }
-  #app { width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 16px; }
+    background: transparent;
+    color: #e8e8e8; min-height: 100vh; display: flex; justify-content: center; align-items: stretch; padding: 0; margin: 0; overflow: hidden; }
+  #app { width: 100%; height: 100vh; max-width: 100%; display: flex; flex-direction: column; gap: 10px; padding: 10px; box-sizing: border-box; }
   .header { text-align: center; padding: 8px 0; }
   .header h1 { font-size: 1.3rem; font-weight: 600;
     background: linear-gradient(135deg, #fff 0%, #8fa9d4 100%);
     -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 4px; }
   .header p { font-size: 0.85rem; color: #8a93a6; }
-  .stage { position: relative; width: 100%; aspect-ratio: 3 / 4; background: #000; border-radius: 20px;
+  .stage { position: relative; width: 100%; flex: 1; background: #000; border-radius: 12px; min-height: 200px;
     overflow: hidden; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 20px 60px rgba(0,0,0,0.6); }
   video, canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
   .placeholder { position: absolute; inset: 0; display: flex; flex-direction: column;
@@ -29,24 +29,24 @@
   .mode-badge { position: absolute; top: 12px; right: 12px; padding: 6px 12px; border-radius: 20px;
     font-size: 0.75rem; font-weight: 600; backdrop-filter: blur(10px); background: rgba(92,157,255,0.85); color: #fff; }
   
-  .controls { display: flex; flex-direction: column; gap: 12px; }
-  .mode-tabs { display: flex; gap: 4px; background: rgba(0,0,0,0.4); padding: 4px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.06); }
+  .controls { display: flex; flex-direction: column; gap: 8px; }
+  .mode-tabs { display: flex; gap: 4px; background: rgba(0,0,0,0.4); padding: 4px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); }
   .mode-tab { flex: 1; padding: 10px; border-radius: 9px; border: none; background: transparent;
     color: #8a93a6; cursor: pointer; font-family: inherit; font-size: 0.85rem; transition: all 0.2s; }
   .mode-tab.active { background: linear-gradient(135deg, #1c2230, #2a3244); color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
   
   .btn-row { display: flex; gap: 10px; }
-  button { flex: 1; padding: 14px 16px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.1);
+  button { flex: 1; padding: 10px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.1);
     background: linear-gradient(135deg, #1c2230 0%, #141a26 100%); color: #e8e8e8; cursor: pointer; font-family: inherit; font-size: 0.9rem; font-weight: 500; transition: all 0.2s; }
   button:hover:not(:disabled) { transform: translateY(-1px); }
   button:disabled { opacity: 0.35; cursor: not-allowed; }
   button.primary { background: linear-gradient(135deg, #5c9dff 0%, #3d7ae0 100%); border-color: transparent; color: #fff; }
   button.danger { background: linear-gradient(135deg, #ff5c7c 0%, #d93d5c 100%); border-color: transparent; color: #fff; }
   
-  .sliders { display: none; flex-direction: column; gap: 12px; background: rgba(20,26,38,0.8);
-    padding: 16px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.06); backdrop-filter: blur(10px); }
+  .sliders { display: none; flex-direction: column; gap: 8px; background: rgba(20,26,38,0.5);
+    padding: 16px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px); }
   .sliders.show { display: flex; }
-  .slider-group { display: flex; align-items: center; gap: 12px; }
+  .slider-group { display: flex; align-items: center; gap: 8px; }
   .slider-group label { width: 70px; font-size: 0.85rem; color: #b0b8c8; }
   .slider-group input[type="range"] { flex: 1; accent-color: #5c9dff; height: 4px; cursor: pointer; }
   .slider-group span { width: 50px; text-align: left; font-size: 0.8rem; color: #8a93a6; font-variant-numeric: tabular-nums; }
@@ -54,10 +54,6 @@
 </head>
 <body>
 <div id="app">
-  <div class="header">
-    <h1>ساعت را روی مچ خود امتحان کنید</h1>
-    <p>دست خود را ۵ ثانیه مقابل دوربین نگه دارید</p>
-  </div>
   <div class="stage">
     <video id="webcam" autoplay playsinline muted></video>
     <canvas id="overlay"></canvas>
