@@ -29,6 +29,18 @@
     background: linear-gradient(90deg, #5c9dff, #38e6a8); transition: width 0.1s linear; }
   .mode-badge { position: absolute; top: 12px; right: 12px; padding: 6px 12px; border-radius: 20px;
     font-size: 0.75rem; font-weight: 600; backdrop-filter: blur(10px); background: rgba(92,157,255,0.85); color: #fff; }
+
+  .mode-tabs { display: flex; gap: 4px; background: rgba(0,0,0,0.4); padding: 4px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.06); }
+  .mode-tab { flex: 1; padding: 10px; border-radius: 9px; border: none; background: transparent;
+    color: #8a93a6; cursor: pointer; font-family: inherit; font-size: 0.85rem; transition: all 0.2s; }
+  .mode-tab.active { background: linear-gradient(135deg, #1c2230, #2a3244); color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+  .sliders { display: none; flex-direction: column; gap: 12px; background: rgba(20,26,38,0.8);
+    padding: 16px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.06); backdrop-filter: blur(10px); }
+  .sliders.show { display: flex; }
+  .slider-group { display: flex; align-items: center; gap: 12px; }
+  .slider-group label { width: 70px; font-size: 0.85rem; color: #b0b8c8; }
+  .slider-group input[type="range"] { flex: 1; accent-color: #5c9dff; height: 4px; cursor: pointer; }
+  .slider-group span { width: 50px; text-align: left; font-size: 0.8rem; color: #8a93a6; font-variant-numeric: tabular-nums; }
   .controls { display: flex; flex-direction: column; gap: 12px; }
   .btn-row { display: flex; gap: 10px; }
   button { flex: 1; padding: 14px 16px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.1);
@@ -55,10 +67,22 @@
     <div class="status-overlay" id="status">آماده شروع</div>
   </div>
   <div class="controls">
+  <div class="mode-tabs">
+    <button class="mode-tab active" id="tab-smart">🤖 هوشمند</button>
+    <button class="mode-tab" id="tab-manual">🎛️ دستی</button>
+  </div>
     <div class="btn-row">
       <button id="start-btn" class="primary">شروع دوربین</button>
       <button id="stop-btn" class="danger" disabled>توقف</button>
     </div>
+    <button id="fix-btn" disabled style="display:none;">📌 فیکس موقعیت</button>
+    <div class="sliders" id="sliders">
+      <div class="slider-group"><label for="size-slider">اندازه:</label><input type="range" id="size-slider" min="0.1" max="3.0" step="0.01" value="1.31"><span id="size-val">1.31</span></div>
+      <div class="slider-group"><label for="rot-slider">چرخش:</label><input type="range" id="rot-slider" min="-180" max="180" step="1" value="-101"><span id="rot-val">-101°</span></div>
+      <div class="slider-group"><label for="x-slider">افقی:</label><input type="range" id="x-slider" min="-30" max="30" step="1" value="1"><span id="x-val">1%</span></div>
+      <div class="slider-group"><label for="y-slider">عمودی:</label><input type="range" id="y-slider" min="-30" max="30" step="1" value="0"><span id="y-val">0%</span></div>
+    </div>
+
   </div>
 </div>
 
@@ -129,6 +153,7 @@ async function startCamera() {
     placeholder.style.display = "none";
     calibStartTime = null; calibrationDone = false; calibSamples = [];
     setStatus("دست خود را ۵ ثانیه مقابل دوربین نگه دارید...");
+    updateUI();
     requestAnimationFrame(loop);
   } catch(e) { setStatus("خطا: " + e.message); }
 }
@@ -142,6 +167,7 @@ function stopCamera() {
   progressBar.style.width = "0%";
   setStatus("دوربین متوقف شد.");
   calibrationDone = false; calibStartTime = null; calibSamples = [];
+  updateUI();
 }
 
 function estimateWristFrame(p) {
@@ -238,11 +264,23 @@ function loop() {
             while (d < -Math.PI) d += Math.PI * 2;
             smoothA = smoothA + d * 0.35;
           } else { smoothA = targetA; }
-          const finalW = canvas.width * FIXED_SIZE_RATIO;
-          const finalX = smoothX + (canvas.width * FIXED_X_PCT / 100);
-          const finalY = smoothY + (canvas.height * FIXED_Y_PCT / 100);
-          renderWatch(finalX, finalY, finalW, smoothA);
-          setStatus("دست شناسایی شد ✓");
+          if (mode === "smart") {
+            if (isFixed && fixedState) {
+              renderWatch(fixedState.x, fixedState.y, fixedState.w, fixedState.a);
+            } else {
+              const finalW = canvas.width * 0.2 * FIXED_SIZE_RATIO_OVERRIDE; // 0.2 پیش‌فرض
+              // استفاده از مقادیر ثابت برای هوشمند
+              const smartW = canvas.width * 0.18; // اندازه ثابت هوشمند
+              renderWatch(smoothX + (canvas.width * 1/100), smoothY, smartW, smoothA);
+            }
+          } else {
+            const finalW = canvas.width * 0.2 * manualScale; // تنظیم دستی اندازه
+            const finalX = smoothX + (canvas.width * manualX / 100);
+            const finalY = smoothY + (canvas.height * manualY / 100);
+            const finalA = smoothA + (manualRotation * Math.PI / 180);
+            renderWatch(finalX, finalY, finalW, finalA);
+          }
+          setStatus(mode === "smart" ? "هوشمند" : "دستی");
         }
       }
     } else {
