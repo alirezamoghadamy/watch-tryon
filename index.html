@@ -6,7 +6,7 @@
 <title>تست مجازی ساعت کاسیو</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  body { font-family: system-ui, -apple-system, sans-serif;
     background: radial-gradient(circle at 30% 20%, #1a2438 0%, #0a0d14 60%, #05070b 100%);
     color: #e8e8e8; min-height: 100vh; display: flex; justify-content: center; align-items: flex-start; padding: 16px; }
   #app { width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 16px; }
@@ -17,154 +17,139 @@
   .header p { font-size: 0.85rem; color: #8a93a6; }
   .stage { position: relative; width: 100%; aspect-ratio: 3 / 4; background: #000; border-radius: 20px;
     overflow: hidden; border: 1px solid rgba(255,255,255,0.08);
-    box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(92,157,255,0.1); }
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6); }
   video, canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
   .placeholder { position: absolute; inset: 0; display: flex; flex-direction: column;
-    justify-content: center; align-items: center; color: #555; font-size: 0.9rem; gap: 8px; pointer-events: none; }
+    justify-content: center; align-items: center; color: #555; font-size: 0.9rem; gap: 8px; }
   .placeholder-icon { font-size: 3rem; opacity: 0.3; }
   .status-overlay { position: absolute; bottom: 12px; left: 12px; right: 12px;
     background: rgba(0,0,0,0.7); backdrop-filter: blur(10px); padding: 8px 14px;
     border-radius: 10px; font-size: 0.8rem; color: #b0b8c8; text-align: center; }
-  .progress-bar { position: absolute; top: 0; left: 0; height: 3px;
-    background: linear-gradient(90deg, #5c9dff, #38e6a8); transition: width 0.1s linear; box-shadow: 0 0 10px #5c9dff; }
+  .progress-bar { position: absolute; top: 0; left: 0; height: 3px; width: 0%;
+    background: linear-gradient(90deg, #5c9dff, #38e6a8); transition: width 0.1s linear; }
   .mode-badge { position: absolute; top: 12px; right: 12px; padding: 6px 12px; border-radius: 20px;
-    font-size: 0.75rem; font-weight: 600; backdrop-filter: blur(10px); }
-  .mode-badge.smart { background: rgba(92,157,255,0.85); color: #fff; }
-  .mode-badge.manual { background: rgba(255,152,92,0.85); color: #fff; }
-  .mode-badge.locked { background: rgba(255,80,120,0.85); color: #fff; }
-  .mode-badge.calib { background: rgba(56,230,168,0.85); color: #fff; }
+    font-size: 0.75rem; font-weight: 600; backdrop-filter: blur(10px); background: rgba(92,157,255,0.85); color: #fff; }
   .controls { display: flex; flex-direction: column; gap: 12px; }
   .btn-row { display: flex; gap: 10px; }
-  button { flex: 1; padding: 14px 16px; border-radius: 14px;
-    border: 1px solid rgba(255,255,255,0.1);
+  button { flex: 1; padding: 14px 16px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.1);
     background: linear-gradient(135deg, #1c2230 0%, #141a26 100%);
     color: #e8e8e8; cursor: pointer; font-family: inherit; font-size: 0.9rem; font-weight: 500; transition: all 0.2s; }
-  button:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,0,0,0.4); }
+  button:hover:not(:disabled) { transform: translateY(-1px); }
   button:disabled { opacity: 0.35; cursor: not-allowed; }
   button.primary { background: linear-gradient(135deg, #5c9dff 0%, #3d7ae0 100%); border-color: transparent; color: #fff; }
   button.danger { background: linear-gradient(135deg, #ff5c7c 0%, #d93d5c 100%); border-color: transparent; color: #fff; }
-  button.locked { background: linear-gradient(135deg, #ff9a3d 0%, #e07a20 100%); border-color: transparent; color: #fff; }
-  .mode-tabs { display: flex; gap: 4px; background: rgba(0,0,0,0.4); padding: 4px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.06); }
-  .mode-tab { flex: 1; padding: 10px; border-radius: 9px; border: none; background: transparent;
-    color: #8a93a6; cursor: pointer; font-family: inherit; font-size: 0.85rem; transition: all 0.2s; }
-  .mode-tab.active { background: linear-gradient(135deg, #1c2230, #2a3244); color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
-  .sliders { display: none; flex-direction: column; gap: 12px; background: rgba(20,26,38,0.8);
-    padding: 16px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.06); backdrop-filter: blur(10px); }
-  .sliders.show { display: flex; }
-  .slider-group { display: flex; align-items: center; gap: 12px; }
-  .slider-group label { width: 70px; font-size: 0.85rem; color: #b0b8c8; }
-  .slider-group input[type="range"] { flex: 1; accent-color: #5c9dff; height: 4px; cursor: pointer; }
-  .slider-group span { width: 60px; text-align: left; font-size: 0.8rem; color: #8a93a6; font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="header">
+    <h1>ساعت را روی مچ خود امتحان کنید</h1>
+    <p>دست خود را ۵ ثانیه مقابل دوربین نگه دارید</p>
+  </div>
+  <div class="stage">
+    <video id="webcam" autoplay playsinline muted></video>
+    <canvas id="overlay"></canvas>
+    <div class="progress-bar" id="progress-bar"></div>
+    <div class="placeholder" id="placeholder"><div class="placeholder-icon">📷</div><div>دوربین خاموش است</div></div>
+    <div class="mode-badge" id="mode-badge">هوشمند</div>
+    <div class="status-overlay" id="status">آماده شروع</div>
+  </div>
+  <div class="controls">
+    <div class="btn-row">
+      <button id="start-btn" class="primary">شروع دوربین</button>
+      <button id="stop-btn" class="danger" disabled>توقف</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { FilesetResolver, HandLandmarker } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest";
+
+const video = document.getElementById("webcam");
+const canvas = document.getElementById("overlay");
+const ctx = canvas.getContext("2d");
+const startBtn = document.getElementById("start-btn");
+const stopBtn = document.getElementById("stop-btn");
+const statusEl = document.getElementById("status");
+const placeholder = document.getElementById("placeholder");
+const modeBadge = document.getElementById("mode-badge");
+const progressBar = document.getElementById("progress-bar");
+
+const WATCH_B64 = "";
+
+// ====== مقادیر ثابت نهایی ======
+const FIXED_SIZE_PX = 146.3;
+const FIXED_ROT_DEG = -272.7;
+const FIXED_X_PX = 400;
+const FIXED_Y_PX = 270;
+// ==============================
+
+const HAND_CONNECTIONS = [
+  [0,1],[1,2],[2,3],[3,4],[0,5],[5,6],[6,7],[7,8],[5,9],[9,10],[10,11],[11,12],
+  [9,13],[13,14],[14,15],[15,16],[13,17],[17,18],[18,19],[19,20],[0,17]
+];
+
+let watchImage = null, handLandmarker = null, stream = null;
+let running = false, lastVideoTime = -1;
+const CALIB_MS = 5000;
+let calibStartTime = null, calibrationDone = false;
+let calibSamples = [];
+
+const dist = (a, b) => Math.hypot(b.x-a.x, b.y-a.y);
+const mean = (arr) => ({ x: arr.reduce((s,p)=>s+p.x,0)/arr.length, y: arr.reduce((s,p)=>s+p.y,0)/arr.length });
+
+function setStatus(t) { statusEl.textContent = t; }
+
+async function initModel() {
+  setStatus("در حال بارگذاری مدل...");
+  try {
+    const vision = await FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm");
+    handLandmarker = await HandLandmarker.createFromOptions(vision, {
+      baseOptions: {
+        modelAssetPath: "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task",
+        delegate: "GPU"
+      },
+      runningMode: "VIDEO", numHands: 1
+    });
+    setStatus("مدل آماده است. دکمه شروع را بزنید.");
+    const img = new Image();
+    img.onload = () => { watchImage = img; };
+    img.src = "data:image/png;base64," + WATCH_B64;
+  } catch(e) { setStatus("خطا: " + e.message); }
 }
 
 async function startCamera() {
   if (!handLandmarker || !watchImage) { setStatus("در حال آماده‌سازی..."); return; }
   try {
     stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: "user", width: {ideal: 720}, height: {ideal: 1280} },
-      audio: false
+      video: { facingMode: "user", width: {ideal: 720}, height: {ideal: 1280} }, audio: false
     });
-    video.srcObject = stream;
-    await video.play();
-    running = true;
-    lastVideoTime = -1;
-    startBtn.disabled = true;
-    stopBtn.disabled = false;
+    video.srcObject = stream; await video.play();
+    running = true; lastVideoTime = -1;
+    startBtn.disabled = true; stopBtn.disabled = false;
     placeholder.style.display = "none";
-    calibStartTime = null;
-    calibrationDone = false;
-    calibSamples.length = 0;
-    smooth = { x: null, y: null, w: null, a: null, frame: null };
-    isFixed = false; fixedState = null;
-      setStatus("دست خود را ۵ ثانیه مقابل دوربین نگه دارید...");
-    updateModeUI();
+    calibStartTime = null; calibrationDone = false; calibSamples = [];
+    setStatus("دست خود را ۵ ثانیه مقابل دوربین نگه دارید...");
     requestAnimationFrame(loop);
-  } catch(e) {
-    setStatus("خطا: " + e.message);
-    console.error(e);
-  }
+  } catch(e) { setStatus("خطا: " + e.message); }
 }
 
 function stopCamera() {
-  running = false;
-  startBtn.disabled = false;
-  stopBtn.disabled = true;
-  fixBtn.disabled = true;
-  fixBtn.style.display = "none";
+  running = false; startBtn.disabled = false; stopBtn.disabled = true;
   if (stream) stream.getTracks().forEach(t => t.stop());
-  stream = null;
-  video.srcObject = null;
+  stream = null; video.srcObject = null;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   placeholder.style.display = "flex";
   progressBar.style.width = "0%";
   setStatus("دوربین متوقف شد.");
-  isFixed = false; fixedState = null;
-  calibrationDone = false;
-  calibStartTime = null;
-  calibSamples.length = 0;
-  updateModeUI();
+  calibrationDone = false; calibStartTime = null; calibSamples = [];
 }
-
-function setMode(m) {
-  mode = m; isFixed = false; fixedState = null;
-  calibrationDone = false; calibStartTime = null; calibSamples.length = 0;
-  smooth = { x: null, y: null, w: null, a: null, frame: null };
-  progressBar.style.width = "0%";
-  updateModeUI();
-}
-
-function updateModeUI() {
-  if (mode === "smart") {
-    tabSmart.classList.add("active"); tabManual.classList.remove("active");
-    slidersBox.classList.remove("show");
-    if (!calibrationDone) {
-      modeBadge.className = "mode-badge calib";
-      modeBadge.textContent = "🎯 کالیبراسیون";
-    } else if (isFixed) {
-      modeBadge.className = "mode-badge locked";
-      modeBadge.textContent = "🔒 فیکس";
-    } else {
-      modeBadge.className = "mode-badge smart";
-      modeBadge.textContent = "🤖 هوشمند";
-    }
-    fixBtn.style.display = (running && calibrationDone) ? "block" : "none";
-    fixBtn.disabled = !(running && calibrationDone);
-    fixBtn.className = isFixed ? "locked" : "";
-    fixBtn.textContent = isFixed ? "🔓 آزاد کردن" : "📌 فیکس موقعیت";
-  } else {
-    tabSmart.classList.remove("active"); tabManual.classList.add("active");
-    slidersBox.classList.add("show");
-    modeBadge.className = "mode-badge manual";
-    modeBadge.textContent = "🎛️ دستی";
-    fixBtn.style.display = "none";
-  }
-}
-
-tabSmart.addEventListener("click", () => setMode("smart"));
-tabManual.addEventListener("click", () => setMode("manual"));
-
-sizeSlider.addEventListener("input", e => { manualScale = parseFloat(e.target.value); sizeVal.textContent = manualScale.toFixed(2); });
-rotSlider.addEventListener("input", e => { manualRotation = parseFloat(e.target.value); rotVal.textContent = manualRotation + "°"; });
-xSlider.addEventListener("input", e => { manualX = parseFloat(e.target.value); xVal.textContent = manualX + "px"; });
-ySlider.addEventListener("input", e => { manualY = parseFloat(e.target.value); yVal.textContent = manualY + "px"; });
-
-fixBtn.addEventListener("click", () => {
-  isFixed = !isFixed;
-  if (isFixed) {
-    fixedState = { x: smooth.x, y: smooth.y, w: smooth.w, a: smooth.a };
-  } else {
-    fixedState = null;
-  }
-  updateModeUI();
-});
 
 function estimateWristFrame(p) {
   if (!p || p.length < 21) return null;
   const wrist = p[0];
-  const mcps = [p[5], p[9], p[13], p[17]];
-  const mcpMean = mean(mcps);
-  let ax = mcpMean.x - wrist.x;
-  let ay = mcpMean.y - wrist.y;
+  const mcpMean = mean([p[5], p[9], p[13], p[17]]);
+  let ax = mcpMean.x - wrist.x, ay = mcpMean.y - wrist.y;
   const len = Math.hypot(ax, ay);
   if (len < 15) return null;
   ax /= len; ay /= len;
@@ -174,32 +159,24 @@ function estimateWristFrame(p) {
   const cx = wrist.x - ax * offset;
   const cy = wrist.y - ay * offset;
   const baseAngle = Math.atan2(ay, ax) - Math.PI / 2;
-  return { cx, cy, angle: baseAngle, wristWidth, ax, ay };
+  return { cx, cy, angle: baseAngle };
 }
 
-function drawSkeleton(p, opacity = 1) {
+function drawSkeleton(p) {
   ctx.save();
-  ctx.globalAlpha = opacity;
   ctx.strokeStyle = "rgba(92,157,255,0.9)";
   ctx.lineWidth = Math.max(2, canvas.width * 0.004);
   ctx.lineCap = "round";
   for (const [a,b] of HAND_CONNECTIONS) {
-    ctx.beginPath();
-    ctx.moveTo(p[a].x, p[a].y);
-    ctx.lineTo(p[b].x, p[b].y);
-    ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(p[a].x, p[a].y); ctx.lineTo(p[b].x, p[b].y); ctx.stroke();
   }
   ctx.fillStyle = "rgba(56,230,168,0.95)";
   for (let i = 0; i < 21; i++) {
-    ctx.beginPath();
-    ctx.arc(p[i].x, p[i].y, Math.max(3, canvas.width * 0.006), 0, Math.PI * 2);
-    ctx.fill();
+    ctx.beginPath(); ctx.arc(p[i].x, p[i].y, Math.max(3, canvas.width * 0.006), 0, Math.PI * 2); ctx.fill();
   }
   ctx.fillStyle = "rgba(255,152,92,0.95)";
   for (const idx of [0, 5, 9, 13, 17]) {
-    ctx.beginPath();
-    ctx.arc(p[idx].x, p[idx].y, Math.max(5, canvas.width * 0.009), 0, Math.PI * 2);
-    ctx.fill();
+    ctx.beginPath(); ctx.arc(p[idx].x, p[idx].y, Math.max(5, canvas.width * 0.009), 0, Math.PI * 2); ctx.fill();
   }
   ctx.restore();
 }
@@ -208,27 +185,22 @@ function renderWatch(x, y, w, a) {
   if (!watchImage) return;
   const h = w * (watchImage.height / watchImage.width);
   ctx.save();
-  ctx.translate(x, y);
-  ctx.rotate(a);
-  ctx.shadowColor = "rgba(0,0,0,0.5)";
-  ctx.shadowBlur = Math.max(8, w * 0.08);
-  ctx.shadowOffsetY = Math.max(2, w * 0.03);
+  ctx.translate(x, y); ctx.rotate(a);
+  ctx.shadowColor = "rgba(0,0,0,0.5)"; ctx.shadowBlur = Math.max(8, w * 0.08); ctx.shadowOffsetY = Math.max(2, w * 0.03);
   ctx.drawImage(watchImage, -w/2, -h/2, w, h);
   ctx.restore();
 }
 
+let smoothX = null, smoothY = null, smoothA = null;
 
 function loop() {
   if (!running) return;
   if (video.readyState >= 2 && video.currentTime !== lastVideoTime) {
     lastVideoTime = video.currentTime;
-
     if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
+      canvas.width = video.videoWidth; canvas.height = video.videoHeight;
     }
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
     const now = performance.now();
     const res = handLandmarker.detectForVideo(video, now);
     const hasHand = res.landmarks && res.landmarks.length > 0;
@@ -237,62 +209,38 @@ function loop() {
       const p = res.landmarks[0].map(pt => ({ x: pt.x * canvas.width, y: pt.y * canvas.height }));
 
       if (!calibrationDone) {
-        drawSkeleton(p, 1);
+        drawSkeleton(p);
         if (calibStartTime == null) calibStartTime = now;
         const elapsed = now - calibStartTime;
-        const pct = Math.min(100, (elapsed / CALIB_MS) * 100);
-        progressBar.style.width = pct + "%";
+        progressBar.style.width = Math.min(100, (elapsed / CALIB_MS) * 100) + "%";
         const frame = estimateWristFrame(p);
         if (frame) calibSamples.push(frame);
         const remaining = Math.ceil((CALIB_MS - elapsed) / 1000);
         setStatus("دست را ثابت نگه دار — " + Math.max(0, remaining) + " ثانیه");
 
         if (elapsed >= CALIB_MS && calibSamples.length > 5) {
-          const avg = calibSamples.reduce((acc, s) => ({
-            cx: acc.cx + s.cx / calibSamples.length,
-            cy: acc.cy + s.cy / calibSamples.length,
-            wristWidth: acc.wristWidth + s.wristWidth / calibSamples.length,
-            angle: acc.angle + s.angle / calibSamples.length
-          }), { cx: 0, cy: 0, wristWidth: 0, angle: 0 });
-
-          smooth.x = avg.cx;
-          smooth.y = avg.cy;
-          smooth.w = avg.wristWidth * FIXED_SIZE;
-          smooth.a = avg.angle + (FIXED_ROT_DEG * Math.PI / 180);
+          smoothX = calibSamples.reduce((s, f) => s + f.cx, 0) / calibSamples.length;
+          smoothY = calibSamples.reduce((s, f) => s + f.cy, 0) / calibSamples.length;
+          smoothA = calibSamples.reduce((s, f) => s + f.angle, 0) / calibSamples.length + (FIXED_ROT_DEG * Math.PI / 180);
           calibrationDone = true;
           progressBar.style.width = "100%";
           setTimeout(() => { progressBar.style.width = "0%"; }, 500);
           setStatus("✅ کالیبراسیون انجام شد");
-          updateModeUI();
         }
       } else {
-        if (mode === "manual") {
-          const frame = estimateWristFrame(p);
-          if (frame) {
-            smooth.x = sm(smooth.x, frame.cx, 0.35);
-            smooth.y = sm(smooth.y, frame.cy, 0.35);
-            smooth.w = sm(smooth.w, frame.wristWidth * manualScale, 0.2);
-            smooth.a = smAngle(smooth.a, frame.angle + manualRotation * Math.PI/180, 0.35);
-            const dx = manualX;
-            const dy = manualY;
-            renderWatch(smooth.x + dx, smooth.y + dy, smooth.w, smooth.a);
-            setStatus("حالت دستی");
-          } else { setStatus("مچ پیدا نشد"); }
-        } else {
-          if (isFixed && fixedState) {
-            renderWatch(fixedState.x, fixedState.y, fixedState.w, fixedState.a);
-            setStatus("🔒 موقعیت قفل شده");
-          } else {
-            const frame = estimateWristFrame(p);
-            if (frame) {
-              smooth.x = sm(smooth.x, frame.cx, 0.35);
-              smooth.y = sm(smooth.y, frame.cy, 0.35);
-              smooth.w = sm(smooth.w, frame.wristWidth * FIXED_SIZE, 0.2);
-              smooth.a = smAngle(smooth.a, frame.angle + (FIXED_ROT_DEG * Math.PI / 180), 0.35);
-              renderWatch(smooth.x + FIXED_X_PCT, smooth.y + FIXED_Y_PCT, smooth.w, smooth.a);
-              setStatus("دست شناسایی شد ✓");
-            }
-          }
+        const frame = estimateWristFrame(p);
+        if (frame) {
+          smoothX = smoothX == null ? frame.cx : smoothX + (frame.cx - smoothX) * 0.35;
+          smoothY = smoothY == null ? frame.cy : smoothY + (frame.cy - smoothY) * 0.35;
+          let targetA = frame.angle + (FIXED_ROT_DEG * Math.PI / 180);
+          if (smoothA != null) {
+            let d = targetA - smoothA;
+            while (d > Math.PI) d -= Math.PI * 2;
+            while (d < -Math.PI) d += Math.PI * 2;
+            smoothA = smoothA + d * 0.35;
+          } else { smoothA = targetA; }
+          renderWatch(smoothX + FIXED_X_PX, smoothY + FIXED_Y_PX, FIXED_SIZE_PX, smoothA);
+          setStatus("دست شناسایی شد ✓");
         }
       }
     } else {
