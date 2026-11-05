@@ -304,7 +304,7 @@ function estimateWristFrame(p) {
 
   const palmWidth = dist(p[5], p[17]);
   const wristWidth = palmWidth * 0.55;
-  const offset = wristWidth * 0.45;
+  const offset = wristWidth * 0.45 + (canvas.width * 0.01);
   const cx = wrist.x - ax * offset;
   const cy = wrist.y - ay * offset;
   const angle = Math.atan2(ay, ax) - Math.PI / 2 + (-101 * Math.PI / 180);
