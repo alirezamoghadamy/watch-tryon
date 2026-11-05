@@ -73,9 +73,9 @@
     </div>
     
     <div class="sliders" id="sliders">
-      <div class="slider-group"><label for="size-slider">اندازه:</label><input type="range" id="size-slider" min="0.1" max="3.0" step="0.01" value="1.31"><span id="size-val">1.31</span></div>
-      <div class="slider-group"><label for="rot-slider">چرخش:</label><input type="range" id="rot-slider" min="-180" max="180" step="1" value="-101"><span id="rot-val">-101°</span></div>
-      <div class="slider-group"><label for="x-slider">افقی:</label><input type="range" id="x-slider" min="-30" max="30" step="1" value="1"><span id="x-val">1%</span></div>
+      <div class="slider-group"><label for="size-slider">اندازه:</label><input type="range" id="size-slider" min="0.1" max="3.0" step="0.01" value="1.96"><span id="size-val">1.96</span></div>
+      <div class="slider-group"><label for="rot-slider">چرخش:</label><input type="range" id="rot-slider" min="-180" max="180" step="1" value="-94"><span id="rot-val">-94°</span></div>
+      <div class="slider-group"><label for="x-slider">افقی:</label><input type="range" id="x-slider" min="-30" max="30" step="1" value="0"><span id="x-val">0%</span></div>
       <div class="slider-group"><label for="y-slider">عمودی:</label><input type="range" id="y-slider" min="-30" max="30" step="1" value="0"><span id="y-val">0%</span></div>
     </div>
   </div>
@@ -111,7 +111,7 @@ const WATCH_B64 = "iVBORw0KGgoAAAANSUhEUgAAB9AAAAfQCAYAAACaOMR5AAAAAXNSR0IArs4c6
 
 let watchImage = null, handLandmarker = null, stream = null;
 let running = false, lastVideoTime = -1;
-const CALIB_MS = 5000;
+const CALIB_MS = 3000;
 let calibStartTime = null, calibrationDone = false;
 let calibSamples = [];
 
@@ -156,7 +156,7 @@ async function startCamera() {
     placeholder.style.display = "none";
     calibStartTime = null; calibrationDone = false; calibSamples = [];
     smoothX = null; smoothY = null; smoothA = null; smoothW = null;
-    isFixed = false;
+    
     setStatus("دست خود را ۵ ثانیه مقابل دوربین نگه دارید...");
     updateUI();
     requestAnimationFrame(loop);
